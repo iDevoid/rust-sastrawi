@@ -42,6 +42,7 @@ impl Tokenizer {
     }
 }
 
+// don't change the order, this follows the structure of actual algorithm
 static _DEFAULT_REGEX_FORMAT: &[(&str, &str)] = &[
     // URL
     (r"(?i)(www\.|https?|s?ftp)\S+", ""),

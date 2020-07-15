@@ -1,21 +1,21 @@
 use crate::dictionary::Dictionary;
 use crate::tokenizer::Tokenizer;
+use crate::affixation::Affixation;
 
-pub struct Stemmer {
-    dictionary: Dictionary,
-    stopword: Dictionary,
+pub struct Stemmer<'a> {
+    dictionary: &'a Dictionary,
     tokenizer: Tokenizer,
+    affixation: Affixation<'a>,
 }
 
-impl Stemmer {
-    pub fn new() -> Stemmer {
-        let dictionary = Dictionary::new();
-        let stopword = Dictionary::stopword();
+impl<'a> Stemmer<'a> {
+    pub fn new(dictionary: &Dictionary) -> Stemmer {
         let tokenizer = Tokenizer::new();
+        let affixation = Affixation::new(dictionary);
         Stemmer{
             dictionary: dictionary,
-            stopword: stopword,
-            tokenizer: tokenizer
+            tokenizer: tokenizer,
+            affixation: affixation,
         }
     }
 
@@ -31,24 +31,16 @@ impl Stemmer {
             if self.dictionary.find(word) {
                 results.push(word.clone());
             }
-        }
 
-        //TODO : 
-        // - check for prefix, particle, suffix, possesive, etc
+            //TODO : 
+            // - check for prefix, particle, suffix, possesive, etc
+            if self.affixation.prefix_first.is_match(word) {
 
-        results
-    }
-
-    pub fn stop_word(&self, sentence: &mut String) {
-        let words = self.tokenizer.tokenize(sentence);
-        let mut results: Vec<String> = Vec::new();
-
-        for word in words.iter() {
-            if !self.stopword.find(word) {
-                results.push(word.clone());
+            } else {
+                
             }
         }
 
-        *sentence = results.join(" ");
+        results
     }
 }
