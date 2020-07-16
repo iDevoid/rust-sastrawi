@@ -1,5 +1,5 @@
 [package]
-name = "rust-sastrawi"
+name = "sastrawi"
 version = "0.1.0"
 authors = ["shoma <muhammadshodiq165@live.com>"]
 edition = "2018"

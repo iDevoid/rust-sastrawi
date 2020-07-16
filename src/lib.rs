@@ -1,6 +1,7 @@
 pub use dictionary::Dictionary;
 pub use stemmer::Stemmer;
 pub use stopword::StopWord;
+pub use tokenizer::Tokenizer;
 
 mod dictionary;
 mod dictionary_default;
