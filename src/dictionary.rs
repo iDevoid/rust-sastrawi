@@ -10,26 +10,25 @@ pub struct Dictionary {
 impl Dictionary {
     // new generates dictionary for stemmer based on default words written on the code
     pub fn new() -> Dictionary {
-        let mut mapped_words : HashMap<String, bool> = HashMap::new();
-        generate_dictionary(&mut mapped_words, _DEFAUL_DICTIONARY);
-
-        Dictionary{
-            basic_words: mapped_words,
-        }
+        generate_dictionary(_DEFAUL_DICTIONARY)
     }
 
     // stopword generates dictionary for stop word remover based on default words for stopword written on the code
     pub fn stopword() -> Dictionary {
-        let mut mapped_words : HashMap<String, bool> = HashMap::new();
-        generate_dictionary(&mut mapped_words, _STOPWORD_DICTIONARY);
+        generate_dictionary(_STOPWORD_DICTIONARY)
+    }
 
-        Dictionary{
-            basic_words: mapped_words,
-        }
+    // if you have your own dataset, you can generate it here
+    pub fn custom(words: &[&str]) -> Dictionary {
+        generate_dictionary(words)
     }
 
     // find lets you search a word from dictionary safely
     pub fn find(&self, word: &String) -> bool {
+        let found = self.basic_words.contains_key(word);
+        if !found {
+            return false
+        }
         self.basic_words.get(word).unwrap().clone()
         // get() function to find the word inside the hashmap
         // unwrap() transforms form Option<&bool> to &bool
@@ -80,8 +79,14 @@ impl Dictionary {
     }
 }
 
-fn generate_dictionary(map: &mut HashMap<String,bool>, words: &[&str]) {
+fn generate_dictionary(words: &[&str]) -> Dictionary {
+    let mut map : HashMap<String, bool> = HashMap::new();
+
     for word in words.iter() {
         map.insert(word.to_string(), true);
+    }
+
+    Dictionary{
+        basic_words: map,
     }
 }

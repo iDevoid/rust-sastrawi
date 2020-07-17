@@ -1,2 +1,2 @@
 # rust-sastrawi
-rust-sastrawi is a Rust Crates based from [PHP Sastrawi](https://github.com/sastrawi/sastrawi) which allows you to do Stemming and StopWord Removal in Bahasa Indonesia (Indonesian Language)
+rust-sastrawi is a Rust Library based from [PHP Sastrawi](https://github.com/sastrawi/sastrawi) which allows you to do Stemming and StopWord Removal in Bahasa Indonesia (Indonesian Language)

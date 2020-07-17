@@ -32,7 +32,6 @@ impl Tokenizer {
         _cleaned_sentence = decode_html(&_cleaned_sentence).unwrap();        
     
         for regex_property in &self.properties {
-            println!("sentence : {} \n regex : {}", &_cleaned_sentence, regex_property.str_regex);
             _cleaned_sentence = regex_property.str_regex.replace_all(&_cleaned_sentence, regex_property.str_replacement).to_string();
         }
 

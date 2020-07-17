@@ -159,81 +159,83 @@ impl<'a> Affixation<'a> {
     fn remove_prefix_me(&self, word: &String) -> (String, Vec<String>) {
         // Pattern 1
         // me{l|r|w|y}V => me-{l|r|w|y}V
-        let mut captured = self.prefix_me_regex.pattern1.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![])
+        let mut captured = self.prefix_me_regex.pattern1.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
         }
 
         // Pattern 2
 	    // mem{b|f|v} => mem-{b|f|v}
-        captured = self.prefix_me_regex.pattern2.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![])
+        captured = self.prefix_me_regex.pattern2.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
         }
 
         // Pattern 3
         // mempe => mem-pe
-        captured = self.prefix_me_regex.pattern3.captures(word).unwrap(); 
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![])
+        captured = self.prefix_me_regex.pattern3.captures(word); 
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
         }
 
         // Pattern 4
         // mem{rV|V} => mem-{rV|V} OR me-p{rV|V}
-        captured = self.prefix_me_regex.pattern4.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![String::from("m"), String::from("p")])
+        captured = self.prefix_me_regex.pattern4.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![String::from("m"), String::from("p")])
         }
 
         // Pattern 5
         // men{c|d|j|s|t|z} => men-{c|d|j|s|t|z}
-        captured = self.prefix_me_regex.pattern5.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![])
+        captured = self.prefix_me_regex.pattern5.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
         }
 
         // Pattern 6
 	    // menV => nV OR tV
-        captured = self.prefix_me_regex.pattern6.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![String::from("n"), String::from("t")])
+        captured = self.prefix_me_regex.pattern6.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![String::from("n"), String::from("t")])
         }
 
         // Pattern 7
         // meng{g|h|q|k} => meng-{g|h|q|k}
-        captured = self.prefix_me_regex.pattern7.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![])
+        captured = self.prefix_me_regex.pattern7.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
         }
 
         // Pattern 8
         // mengV => meng-V OR meng-kV OR me-ngV OR mengV- where V = 'e'
-        captured = self.prefix_me_regex.pattern8.captures(word).unwrap();
-        if captured.len() > 0 {
-            if &captured[2] == "e" {
-                return (captured[3].to_string(), vec![])
+        captured = self.prefix_me_regex.pattern8.captures(word);
+        if captured.is_some() {
+            let unwrapped = captured.unwrap();
+            if &unwrapped.get(2).map_or(String::from(""), |m| m.as_str().to_string()) == "e" {
+                return (unwrapped.get(3).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
             }
-            return (captured[1].to_string(), vec![String::from("ng"), String::from("k")])
+            return (unwrapped.get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![String::from("ng"), String::from("k")])
         }
 
         // Pattern 9
         // menyV => meny-sV OR me-nyV to stem menyala
-        captured = self.prefix_me_regex.pattern9.captures(word).unwrap();
-        if captured.len() > 0 {
+        captured = self.prefix_me_regex.pattern9.captures(word);
+        if captured.is_some() {
             let mut result = String::from("s");
-            if &captured[2] == "a" {
+            let unwrapped = captured.unwrap();
+            if &unwrapped.get(2).map_or(String::from(""), |m| m.as_str().to_string()) == "a" {
                 result = String::from("ny");
             }
-            result.push_str(&captured[1]);
+            result.push_str(&unwrapped.get(1).map_or(String::from(""), |m| m.as_str().to_string()));
 
             return (result, vec![])
         }
 
         // Pattern 10
         // mempV => mem-pA where A != 'e'
-        captured = self.prefix_me_regex.pattern10.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![])
+        captured = self.prefix_me_regex.pattern10.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
         }
 
         (word.to_owned(), vec![])
@@ -242,113 +244,114 @@ impl<'a> Affixation<'a> {
     fn remove_prefix_pe(&self, word: &String) -> (String, Vec<String>) {
         // Pattern 1
 	    // pe{w|y}V => pe-{w|y}V
-        let mut captured = self.prefix_pe_regex.pattern1.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![])
+        let mut captured = self.prefix_pe_regex.pattern1.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
         }
 
         // Pattern 2
         // perV => per-V OR pe-rV
-        captured = self.prefix_pe_regex.pattern2.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![String::from("r")])
+        captured = self.prefix_pe_regex.pattern2.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![String::from("r")])
         }
 
         // Pattern 3
 	    // perCAP => per-CAP where C != 'r' and P != 'er'
-        captured = self.prefix_pe_regex.pattern3.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![])
+        captured = self.prefix_pe_regex.pattern3.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
         }
 
         // Pattern 4
         // perCAerV => per-CAerV where C != 'r'
-        captured = self.prefix_pe_regex.pattern4.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![])
+        captured = self.prefix_pe_regex.pattern4.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
         }
 
         // Pattern 5
         // pem{b|f|v} => pem-{b|f|v}
-        captured = self.prefix_pe_regex.pattern5.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![])
+        captured = self.prefix_pe_regex.pattern5.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
         }
 
         // Pattern 6
         // pem{rV|V} => pe-m{rV|V} OR pe-p{rV|V}
-        captured = self.prefix_pe_regex.pattern6.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![String::from("m"), String::from("p")])
+        captured = self.prefix_pe_regex.pattern6.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![String::from("m"), String::from("p")])
         }
 
         // Pattern 7
         // pen{c|d|j|s|t|z} => pen-{c|d|j|s|t|z}
-        captured = self.prefix_pe_regex.pattern7.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![])
+        captured = self.prefix_pe_regex.pattern7.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
         }
 
         // Pattern 8
         // penV => pe-nV OR pe-tV
-        captured = self.prefix_pe_regex.pattern8.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![String::from("n"), String::from("t")])
+        captured = self.prefix_pe_regex.pattern8.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![String::from("n"), String::from("t")])
         }
 
         // Pattern 9
         // pengC => peng-C
-        captured = self.prefix_pe_regex.pattern9.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![])
+        captured = self.prefix_pe_regex.pattern9.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
         }
 
         // Pattern 10
         // pengV => peng-V OR peng-kV OR pengV- where V = 'e'
-        captured = self.prefix_pe_regex.pattern10.captures(word).unwrap();
-        if captured.len() > 0 {
-            if &captured[2] == "e" {
-                return (captured[3].to_string(), vec![])
+        captured = self.prefix_pe_regex.pattern10.captures(word);
+        if captured.is_some() {
+            let unwrapped = captured.unwrap();
+            if &unwrapped.get(2).map_or(String::from(""), |m| m.as_str().to_string()) == "e" {
+                return (unwrapped.get(3).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
             }
-            return (captured[1].to_string(), vec![String::from("k")])
+            return (unwrapped.get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![String::from("k")])
         }
 
         // Pattern 11
         // penyV => peny-sV OR pe-nyV
-        captured = self.prefix_pe_regex.pattern11.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![String::from("s"), String::from("ny")])
+        captured = self.prefix_pe_regex.pattern11.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![String::from("s"), String::from("ny")])
         }
 
         // Pattern 12
         // pelV => pe-lV OR pel-V for pelajar
-        captured = self.prefix_pe_regex.pattern12.captures(word).unwrap();
-        if captured.len() > 0 {
+        captured = self.prefix_pe_regex.pattern12.captures(word);
+        if captured.is_some() {
             if word == "pelajar" {
                 return (String::from("ajar"), vec![])
             }
-            return (captured[1].to_string(), vec![String::from("k")])
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![String::from("k")])
         }
 
         // Pattern 13
         // peCerV => peC-erV where C != {r|w|y|l|m|n}
-        captured = self.prefix_pe_regex.pattern13.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![])
+        captured = self.prefix_pe_regex.pattern13.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
         }
 
         // Pattern 14
         // peCP => pe-CP where C != {r|w|y|l|m|n} and P != 'er'
-        captured = self.prefix_pe_regex.pattern14.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![])
+        captured = self.prefix_pe_regex.pattern14.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
         }
 
         // Pattern 15
         // peC1erC2 => pe-C1erC2 where C1 != {r|w|y|l|m|n}
-        captured = self.prefix_pe_regex.pattern15.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![])
+        captured = self.prefix_pe_regex.pattern15.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
         }
 
         (word.to_owned(), vec![])
@@ -357,37 +360,37 @@ impl<'a> Affixation<'a> {
     fn remove_prefix_be(&self, word: &String) -> (String, Vec<String>) {
         // Pattern 1
         // berV => ber-V OR be-rV
-        let mut captured = self.prefix_be_regex.pattern1.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![String::from("r")])
+        let mut captured = self.prefix_be_regex.pattern1.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![String::from("r")])
         }
 
         // Pattern 2
         // berCAP => ber-CAP where C != 'r' and P != 'er'
-        captured = self.prefix_be_regex.pattern2.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![])
+        captured = self.prefix_be_regex.pattern2.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
         }
 
         // Pattern 3
         // berCAerV => ber-CAerV where C != 'r'
-        captured = self.prefix_be_regex.pattern3.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![])
+        captured = self.prefix_be_regex.pattern3.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
         }
         
         // Pattern 4
         // belajar => bel-ajar
-        captured = self.prefix_be_regex.pattern4.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![])
+        captured = self.prefix_be_regex.pattern4.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
         }
 
         // Pattern 5
         // beC1erC2 => be-C1erC2 where C1 != {'r'|'l'}
-        captured = self.prefix_be_regex.pattern5.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![])
+        captured = self.prefix_be_regex.pattern5.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
         }
 
         (word.to_owned(), vec![])
@@ -396,37 +399,37 @@ impl<'a> Affixation<'a> {
     fn remove_prefix_te(&self, word: &String) -> (String, Vec<String>) {
         // Pattern 1
 	    // terV => ter-V OR te-rV
-        let mut captured = self.prefix_te_regex.pattern1.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![String::from("r")])
+        let mut captured = self.prefix_te_regex.pattern1.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![String::from("r")])
         }
 
         // Pattern 2
 	    // terCerV => ter-CerV where C != 'r'
-        captured = self.prefix_te_regex.pattern2.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![])
+        captured = self.prefix_te_regex.pattern2.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
         }
 
         // Pattern 3
 	    // terCP => ter-CP where C != 'r' and P != 'er'
-        captured = self.prefix_te_regex.pattern3.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![])
+        captured = self.prefix_te_regex.pattern3.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
         }
         
         // Pattern 4
 	    // teC1erC2 => te-C1erC2 where C1 != 'r'
-        captured = self.prefix_te_regex.pattern4.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![])
+        captured = self.prefix_te_regex.pattern4.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
         }
 
         // Pattern 5
 	    // terC1erC2 => ter-C1erC2 where C1 != 'r'
-        captured = self.prefix_te_regex.pattern5.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[1].to_string(), vec![])
+        captured = self.prefix_te_regex.pattern5.captures(word);
+        if captured.is_some() {
+            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
         }
 
         (word.to_owned(), vec![])
@@ -435,16 +438,30 @@ impl<'a> Affixation<'a> {
     fn remove_infix(&self, word: &String) -> (String, Vec<String>) {
         // Pattern 1
         // CerV => CerV OR CV
-        let mut captured = self.infix_regex.pattern1.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[3].to_string(), vec![captured[1].to_string(), captured[2].to_string()])
+        let mut captured = self.infix_regex.pattern1.captures(word);
+        if captured.is_some() {
+            let unwrapped = captured.unwrap();
+            return (
+                unwrapped.get(3).map_or(String::from(""), |m| m.as_str().to_string()), 
+                vec![
+                    unwrapped.get(1).map_or(String::from(""), |m| m.as_str().to_string()), 
+                    unwrapped.get(2).map_or(String::from(""), |m| m.as_str().to_string())
+                ]
+            )
         }
 
         // Pattern 2
 	    // CinV => CinV OR CV
-        captured = self.infix_regex.pattern2.captures(word).unwrap();
-        if captured.len() > 0 {
-            return (captured[3].to_string(), vec![captured[1].to_string(), captured[2].to_string()])
+        captured = self.infix_regex.pattern2.captures(word);
+        if captured.is_some() {
+            let unwrapped = captured.unwrap();
+            return (
+                unwrapped.get(3).map_or(String::from(""), |m| m.as_str().to_string()), 
+                vec![
+                    unwrapped.get(1).map_or(String::from(""), |m| m.as_str().to_string()), 
+                    unwrapped.get(2).map_or(String::from(""), |m| m.as_str().to_string())
+                ]
+            )
         }
 
         (word.to_owned(), vec![])

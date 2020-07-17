@@ -49,56 +49,56 @@ impl<'a> Stemmer<'a> {
 
         if self.affixation.prefix_first.is_match(word) {
             let (found, found_word) = self.affixation.remove_prefixes(word);
+            *word = found_word;
             if found {
-                *word = found_word;
                 return
             }
 
             let (found_particle, found_word) = self.affixation.remove_particle(word);
             _particle = found_particle;
-            if self.dictionary.find(&found_word) {
-                *word = found_word;
+            *word = found_word;
+            if self.dictionary.find(word) {
                 return
             }
 
             let (found_possesive, found_word) = self.affixation.remove_possesive(word);
             _possesive = found_possesive;
-            if self.dictionary.find(&found_word) {
-                *word = found_word;
+            *word = found_word;
+            if self.dictionary.find(word) {
                 return
             }
 
             let (found_suffix, found_word) = self.affixation.remove_suffix(word);
             _suffix = found_suffix;
-            if self.dictionary.find(&found_word) {
-                *word = found_word;
+            *word = found_word;
+            if self.dictionary.find(word) {
                 return
             }
         } else {
             let (found_particle, found_word) = self.affixation.remove_particle(word);
             _particle = found_particle;
-            if self.dictionary.find(&found_word) {
-                *word = found_word;
+            *word = found_word;
+            if self.dictionary.find(word) {
                 return
             }
 
             let (found_possesive, found_word) = self.affixation.remove_possesive(word);
             _possesive = found_possesive;
-            if self.dictionary.find(&found_word) {
-                *word = found_word;
+            *word = found_word;
+            if self.dictionary.find(word) {
                 return
             }
 
             let (found_suffix, found_word) = self.affixation.remove_suffix(word);
             _suffix = found_suffix;
-            if self.dictionary.find(&found_word) {
-                *word = found_word;
+            *word = found_word;
+            if self.dictionary.find(word) {
                 return
             }
 
             let (found, found_word) = self.affixation.remove_prefixes(word);
+            *word = found_word;
             if found {
-                *word = found_word;
                 return
             }
         }
@@ -109,8 +109,8 @@ impl<'a> Stemmer<'a> {
         }
         
         let (found, found_word) = self.affixation.pengembalian_akhir(&original_word, &removed_suffixes);
+        *word = found_word;
         if found {
-            *word = found_word;
             return
         }
 
