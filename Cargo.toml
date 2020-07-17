@@ -1,8 +1,14 @@
 [package]
 name = "sastrawi"
 version = "0.1.0"
-authors = ["shoma <muhammadshodiq165@live.com>"]
-edition = "2018"
+authors = ["Shodiq Muhammad <muhammadshodiq165@live.com>"]
+license = "MIT"
+repository = "https://github.com/iDevoid/rust-sastrawi"
+description = "A library for stemming and stopword removal for Bahasa Indonesia based on PHP sastrawi project by Andy Librian"
+
+[lib]
+name = "sastrawi"
+path = "src/lib.rs"
 
 [dependencies]
 regex = "1"

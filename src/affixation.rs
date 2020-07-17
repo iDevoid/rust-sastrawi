@@ -1,13 +1,14 @@
+extern crate regex;
+
 use crate::dictionary::Dictionary;
-use regex::Regex;
 
 pub struct Affixation<'a> {
     dictionary: &'a Dictionary,
     // regex for stemmer
-    pub prefix_first: Regex,
-    particle: Regex,
-    possesive: Regex,
-    suffix: Regex,
+    pub prefix_first: regex::Regex,
+    particle: regex::Regex,
+    possesive: regex::Regex,
+    suffix: regex::Regex,
 
     prefix_me_regex: RegexPrefixMe,
     prefix_pe_regex: RegexPrefixPe,
@@ -20,10 +21,10 @@ impl<'a> Affixation<'a> {
     pub fn new(dict: &Dictionary) -> Affixation {
         Affixation{
             dictionary: dict,
-            prefix_first: Regex::new(r"^(be.+lah|be.+an|me.+i|di.+i|pe.+i|ter.+i)$").unwrap(),
-            particle: Regex::new(r"-*(lah|kah|tah|pun)$").unwrap(),
-            possesive: Regex::new(r"-*(ku|mu|nya)$").unwrap(),
-            suffix: Regex::new(r"-*(is|isme|isasi|i|kan|an)$").unwrap(),
+            prefix_first: regex::Regex::new(r"^(be.+lah|be.+an|me.+i|di.+i|pe.+i|ter.+i)$").unwrap(),
+            particle: regex::Regex::new(r"-*(lah|kah|tah|pun)$").unwrap(),
+            possesive: regex::Regex::new(r"-*(ku|mu|nya)$").unwrap(),
+            suffix: regex::Regex::new(r"-*(is|isme|isasi|i|kan|an)$").unwrap(),
             prefix_me_regex: assign_regex_prefix_me(),
             prefix_pe_regex: assign_regex_prefix_pe(),
             prefix_be_regex: assign_regex_prefix_be(),
@@ -470,117 +471,117 @@ impl<'a> Affixation<'a> {
 
 
 struct RegexPrefixMe {
-    pattern1: Regex,
-    pattern2: Regex,
-    pattern3: Regex,
-    pattern4: Regex,
-    pattern5: Regex,
-    pattern6: Regex,
-    pattern7: Regex,
-    pattern8: Regex,
-    pattern9: Regex,
-    pattern10: Regex,
+    pattern1: regex::Regex,
+    pattern2: regex::Regex,
+    pattern3: regex::Regex,
+    pattern4: regex::Regex,
+    pattern5: regex::Regex,
+    pattern6: regex::Regex,
+    pattern7: regex::Regex,
+    pattern8: regex::Regex,
+    pattern9: regex::Regex,
+    pattern10: regex::Regex,
 }
 
 fn assign_regex_prefix_me() -> RegexPrefixMe {
     RegexPrefixMe{
-        pattern1: Regex::new(r"^me([lrwy][aiueo].*)$").unwrap(),
-        pattern2: Regex::new(r"^mem([bfv].*)$").unwrap(),
-        pattern3: Regex::new(r"^mem(pe.*)$").unwrap(),
-        pattern4: Regex::new(r"^mem(r?[aiueo].*)$").unwrap(),
-        pattern5: Regex::new(r"^men([cdjstz].*)$").unwrap(),
-        pattern6: Regex::new(r"^men([aiueo].*)$").unwrap(),
-        pattern7: Regex::new(r"^meng([ghqk].*)$").unwrap(),
-        pattern8: Regex::new(r"^meng(([aiueo])(.*))$").unwrap(),
-        pattern9: Regex::new(r"^meny(([aiueo])(.*))$").unwrap(),
-        pattern10: Regex::new(r"^mem(p[^e].*)$").unwrap(),
+        pattern1: regex::Regex::new(r"^me([lrwy][aiueo].*)$").unwrap(),
+        pattern2: regex::Regex::new(r"^mem([bfv].*)$").unwrap(),
+        pattern3: regex::Regex::new(r"^mem(pe.*)$").unwrap(),
+        pattern4: regex::Regex::new(r"^mem(r?[aiueo].*)$").unwrap(),
+        pattern5: regex::Regex::new(r"^men([cdjstz].*)$").unwrap(),
+        pattern6: regex::Regex::new(r"^men([aiueo].*)$").unwrap(),
+        pattern7: regex::Regex::new(r"^meng([ghqk].*)$").unwrap(),
+        pattern8: regex::Regex::new(r"^meng(([aiueo])(.*))$").unwrap(),
+        pattern9: regex::Regex::new(r"^meny(([aiueo])(.*))$").unwrap(),
+        pattern10: regex::Regex::new(r"^mem(p[^e].*)$").unwrap(),
     }
 }
 
 
 struct RegexPrefixPe {
-    pattern1: Regex,
-    pattern2: Regex,
-    pattern3: Regex,
-    pattern4: Regex,
-    pattern5: Regex,
-    pattern6: Regex,
-    pattern7: Regex,
-    pattern8: Regex,
-    pattern9: Regex,
-    pattern10: Regex,
-    pattern11: Regex,
-    pattern12: Regex,
-    pattern13: Regex,
-    pattern14: Regex,
-    pattern15: Regex,
+    pattern1: regex::Regex,
+    pattern2: regex::Regex,
+    pattern3: regex::Regex,
+    pattern4: regex::Regex,
+    pattern5: regex::Regex,
+    pattern6: regex::Regex,
+    pattern7: regex::Regex,
+    pattern8: regex::Regex,
+    pattern9: regex::Regex,
+    pattern10: regex::Regex,
+    pattern11: regex::Regex,
+    pattern12: regex::Regex,
+    pattern13: regex::Regex,
+    pattern14: regex::Regex,
+    pattern15: regex::Regex,
 }
 
 fn assign_regex_prefix_pe() -> RegexPrefixPe {
     RegexPrefixPe{
-        pattern1: Regex::new(r"^pe([wy][aiueo].*)$").unwrap(),
-        pattern2: Regex::new(r"^per([aiueo].*)$").unwrap(),
-        pattern3: Regex::new(r"^per([^aiueor][a-z][^e].*)$").unwrap(),
-        pattern4: Regex::new(r"^per([^aiueor][a-z]er[aiueo].*)$").unwrap(),
-        pattern5: Regex::new(r"^pem([bfv].*)$").unwrap(),
-        pattern6: Regex::new(r"^pem(r?[aiueo].*)$").unwrap(),
-        pattern7: Regex::new(r"^pen([cdjstz].*)$").unwrap(),
-        pattern8: Regex::new(r"^pen([aiueo].*)$").unwrap(),
-        pattern9: Regex::new(r"^peng([^aiueo].*)$").unwrap(),
-        pattern10: Regex::new(r"^peng(([aiueo])(.*))$").unwrap(),
-        pattern11: Regex::new(r"^peny([aiueo].*)$").unwrap(),
-        pattern12: Regex::new(r"^pe(l[aiueo].*)$").unwrap(),
-        pattern13: Regex::new(r"^pe[^aiueorwylmn](er[aiueo].*)$").unwrap(),
-        pattern14: Regex::new(r"^pe([^aiueorwylmn][^e].*)$").unwrap(),
-        pattern15: Regex::new(r"^pe([^aiueorwylmn]er[^aiueo].*)$").unwrap(),
+        pattern1: regex::Regex::new(r"^pe([wy][aiueo].*)$").unwrap(),
+        pattern2: regex::Regex::new(r"^per([aiueo].*)$").unwrap(),
+        pattern3: regex::Regex::new(r"^per([^aiueor][a-z][^e].*)$").unwrap(),
+        pattern4: regex::Regex::new(r"^per([^aiueor][a-z]er[aiueo].*)$").unwrap(),
+        pattern5: regex::Regex::new(r"^pem([bfv].*)$").unwrap(),
+        pattern6: regex::Regex::new(r"^pem(r?[aiueo].*)$").unwrap(),
+        pattern7: regex::Regex::new(r"^pen([cdjstz].*)$").unwrap(),
+        pattern8: regex::Regex::new(r"^pen([aiueo].*)$").unwrap(),
+        pattern9: regex::Regex::new(r"^peng([^aiueo].*)$").unwrap(),
+        pattern10: regex::Regex::new(r"^peng(([aiueo])(.*))$").unwrap(),
+        pattern11: regex::Regex::new(r"^peny([aiueo].*)$").unwrap(),
+        pattern12: regex::Regex::new(r"^pe(l[aiueo].*)$").unwrap(),
+        pattern13: regex::Regex::new(r"^pe[^aiueorwylmn](er[aiueo].*)$").unwrap(),
+        pattern14: regex::Regex::new(r"^pe([^aiueorwylmn][^e].*)$").unwrap(),
+        pattern15: regex::Regex::new(r"^pe([^aiueorwylmn]er[^aiueo].*)$").unwrap(),
     }
 }
 
 struct RegexPrefixBe {
-    pattern1: Regex,
-    pattern2: Regex,
-    pattern3: Regex,
-    pattern4: Regex,
-    pattern5: Regex,
+    pattern1: regex::Regex,
+    pattern2: regex::Regex,
+    pattern3: regex::Regex,
+    pattern4: regex::Regex,
+    pattern5: regex::Regex,
 }
 
 fn assign_regex_prefix_be() -> RegexPrefixBe {
     RegexPrefixBe{
-        pattern1: Regex::new(r"ber([aiueo].*)$").unwrap(),
-        pattern2: Regex::new(r"^ber([^aiueor][a-z][^e].*)$").unwrap(),
-        pattern3: Regex::new(r"^ber([^aiueor][a-z]er[aiueo].*)$").unwrap(),
-        pattern4: Regex::new(r"^bel(ajar)$").unwrap(),
-        pattern5: Regex::new(r"^be([^aiueorl]er[^aiueo].*)$").unwrap(),
+        pattern1: regex::Regex::new(r"ber([aiueo].*)$").unwrap(),
+        pattern2: regex::Regex::new(r"^ber([^aiueor][a-z][^e].*)$").unwrap(),
+        pattern3: regex::Regex::new(r"^ber([^aiueor][a-z]er[aiueo].*)$").unwrap(),
+        pattern4: regex::Regex::new(r"^bel(ajar)$").unwrap(),
+        pattern5: regex::Regex::new(r"^be([^aiueorl]er[^aiueo].*)$").unwrap(),
     }
 }
 
 struct RegexPrefixTe {
-    pattern1: Regex,
-    pattern2: Regex,
-    pattern3: Regex,
-    pattern4: Regex,
-    pattern5: Regex,
+    pattern1: regex::Regex,
+    pattern2: regex::Regex,
+    pattern3: regex::Regex,
+    pattern4: regex::Regex,
+    pattern5: regex::Regex,
 }
 
 fn assign_regex_prefix_te() -> RegexPrefixTe {
     RegexPrefixTe{
-        pattern1: Regex::new(r"^ter([aiueo].*)$").unwrap(),
-        pattern2: Regex::new(r"^ter([^aiueor]er[aiueo].*)$").unwrap(),
-        pattern3: Regex::new(r"^ter([^aiueor][^e].*)$").unwrap(),
-        pattern4: Regex::new(r"^te([^aiueor]er[^aiueo].*)$").unwrap(),
-        pattern5: Regex::new(r"^ter([^aiueor]er[^aiueo].*)$").unwrap(),
+        pattern1: regex::Regex::new(r"^ter([aiueo].*)$").unwrap(),
+        pattern2: regex::Regex::new(r"^ter([^aiueor]er[aiueo].*)$").unwrap(),
+        pattern3: regex::Regex::new(r"^ter([^aiueor][^e].*)$").unwrap(),
+        pattern4: regex::Regex::new(r"^te([^aiueor]er[^aiueo].*)$").unwrap(),
+        pattern5: regex::Regex::new(r"^ter([^aiueor]er[^aiueo].*)$").unwrap(),
     }
 }
 
 struct RegexInfix {
-    pattern1: Regex,
-    pattern2: Regex,
+    pattern1: regex::Regex,
+    pattern2: regex::Regex,
 }
 
 fn assign_regex_infix() -> RegexInfix {
     RegexInfix{
-        pattern1: Regex::new(r"^(([^aiueo])e[rlm])([aiueo].*)$").unwrap(),
-        pattern2: Regex::new(r"^(([^aiueo])in)([aiueo].*)$").unwrap(),
+        pattern1: regex::Regex::new(r"^(([^aiueo])e[rlm])([aiueo].*)$").unwrap(),
+        pattern2: regex::Regex::new(r"^(([^aiueo])in)([aiueo].*)$").unwrap(),
     }
 }
 
