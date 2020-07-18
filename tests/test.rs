@@ -3,7 +3,7 @@ extern crate sastrawi;
 use sastrawi::*;
 
 #[test]
-fn test_dictionary() {
+fn test_stem_word() {
     let _test_items = &[
         ("mei", "mei"),
 		("bui", "bui"),
@@ -190,5 +190,25 @@ fn test_dictionary() {
 		let mut actual = value.to_string();
 		stemmer.stem_word(&mut actual);
         assert_eq!(actual, expected.to_string());
+    }
+}
+
+#[test]
+fn test_stem_sentence() {
+	let expected = [
+		"ekonomi",
+		"indonesia",
+		"sedang",
+		"dalam",
+		"tumbuh",
+		"yang",
+		"bangga",
+	];
+	let dict = Dictionary::new();
+    let stemmer = Stemmer::new(&dict);
+    let sentence = String::from("Perekonomian Indonesia sedang dalam pertumbuhan yang membanggakan");
+    let stemmed_words = stemmer.stem_sentence(&sentence);
+    for (index, actual) in stemmed_words.iter().enumerate() {
+        assert_eq!(actual.as_str(), expected[index]);
     }
 }

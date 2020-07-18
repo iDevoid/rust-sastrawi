@@ -36,8 +36,7 @@ impl Tokenizer {
         }
 
         _cleaned_sentence = _cleaned_sentence.trim().to_string();
-                
-        vec![_cleaned_sentence.split_whitespace().collect()]
+        _cleaned_sentence.split_whitespace().map(String::from).collect()
     }
 }
 
