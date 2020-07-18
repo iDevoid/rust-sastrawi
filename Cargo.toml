@@ -1,6 +1,6 @@
 [package]
 name = "sastrawi"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Shodiq Muhammad <muhammadshodiq165@live.com>"]
 license = "MIT"
 repository = "https://github.com/iDevoid/rust-sastrawi"
