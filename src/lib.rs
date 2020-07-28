@@ -9,4 +9,5 @@ mod dictionary_stopword;
 mod stemmer;
 mod tokenizer;
 mod affixation;
+mod affixation_regex;
 mod stopword;

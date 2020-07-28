@@ -1,6 +1,7 @@
 extern crate regex;
 
 use crate::dictionary::Dictionary;
+use crate::affixation_regex::*;
 
 pub struct Affixation<'a> {
     dictionary: &'a Dictionary,
@@ -11,10 +12,10 @@ pub struct Affixation<'a> {
     suffix: regex::Regex,
 
     prefix_me_regex: RegexPrefixMe,
-    prefix_pe_regex: RegexPrefixPe,
-    prefix_be_regex: RegexPrefixBe,
-    prefix_te_regex: RegexPrefixTe,
-    infix_regex: RegexInfix,
+    prefix_pe_regex: [(regex::Regex, Vec<String>); 15],
+    prefix_be_regex: [(regex::Regex, Vec<String>); 5],
+    prefix_te_regex: [(regex::Regex, Vec<String>); 5],
+    infix_regex: [regex::Regex; 2],
 }
 
 impl<'a> Affixation<'a> {
@@ -243,232 +244,73 @@ impl<'a> Affixation<'a> {
     }
 
     fn remove_prefix_pe(&self, word: &String) -> (String, Vec<String>) {
-        // Pattern 1
-	    // pe{w|y}V => pe-{w|y}V
-        let mut captured = self.prefix_pe_regex.pattern1.captures(word);
-        if captured.is_some() {
-            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
+        if word == "pelajar" {
+            return (String::from("ajar"), vec![])
         }
+        for (rx, recoding) in self.prefix_pe_regex.iter() {
+            let _captured = rx.captures(word);
+            if _captured.is_some() {
+                let _unwrapped = _captured.unwrap();
+                // this should only be captured by pattern 10
+                if &_unwrapped.get(2).map_or(String::from(""), |m| m.as_str().to_string()) == "e" {
+                    return (
+                        _unwrapped.get(3).map_or(String::from(""), |m| m.as_str().to_string()), 
+                        vec![]
+                    )
+                }
 
-        // Pattern 2
-        // perV => per-V OR pe-rV
-        captured = self.prefix_pe_regex.pattern2.captures(word);
-        if captured.is_some() {
-            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![String::from("r")])
-        }
-
-        // Pattern 3
-	    // perCAP => per-CAP where C != 'r' and P != 'er'
-        captured = self.prefix_pe_regex.pattern3.captures(word);
-        if captured.is_some() {
-            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
-        }
-
-        // Pattern 4
-        // perCAerV => per-CAerV where C != 'r'
-        captured = self.prefix_pe_regex.pattern4.captures(word);
-        if captured.is_some() {
-            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
-        }
-
-        // Pattern 5
-        // pem{b|f|v} => pem-{b|f|v}
-        captured = self.prefix_pe_regex.pattern5.captures(word);
-        if captured.is_some() {
-            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
-        }
-
-        // Pattern 6
-        // pem{rV|V} => pe-m{rV|V} OR pe-p{rV|V}
-        captured = self.prefix_pe_regex.pattern6.captures(word);
-        if captured.is_some() {
-            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![String::from("m"), String::from("p")])
-        }
-
-        // Pattern 7
-        // pen{c|d|j|s|t|z} => pen-{c|d|j|s|t|z}
-        captured = self.prefix_pe_regex.pattern7.captures(word);
-        if captured.is_some() {
-            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
-        }
-
-        // Pattern 8
-        // penV => pe-nV OR pe-tV
-        captured = self.prefix_pe_regex.pattern8.captures(word);
-        if captured.is_some() {
-            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![String::from("n"), String::from("t")])
-        }
-
-        // Pattern 9
-        // pengC => peng-C
-        captured = self.prefix_pe_regex.pattern9.captures(word);
-        if captured.is_some() {
-            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
-        }
-
-        // Pattern 10
-        // pengV => peng-V OR peng-kV OR pengV- where V = 'e'
-        captured = self.prefix_pe_regex.pattern10.captures(word);
-        if captured.is_some() {
-            let unwrapped = captured.unwrap();
-            if &unwrapped.get(2).map_or(String::from(""), |m| m.as_str().to_string()) == "e" {
-                return (unwrapped.get(3).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
+                return (
+                    _unwrapped.get(1).map_or(String::from(""), |m| m.as_str().to_string()),
+                    recoding.to_owned()
+                )
             }
-            return (unwrapped.get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![String::from("k")])
         }
-
-        // Pattern 11
-        // penyV => peny-sV OR pe-nyV
-        captured = self.prefix_pe_regex.pattern11.captures(word);
-        if captured.is_some() {
-            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![String::from("s"), String::from("ny")])
-        }
-
-        // Pattern 12
-        // pelV => pe-lV OR pel-V for pelajar
-        captured = self.prefix_pe_regex.pattern12.captures(word);
-        if captured.is_some() {
-            if word == "pelajar" {
-                return (String::from("ajar"), vec![])
-            }
-            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![String::from("k")])
-        }
-
-        // Pattern 13
-        // peCerV => peC-erV where C != {r|w|y|l|m|n}
-        captured = self.prefix_pe_regex.pattern13.captures(word);
-        if captured.is_some() {
-            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
-        }
-
-        // Pattern 14
-        // peCP => pe-CP where C != {r|w|y|l|m|n} and P != 'er'
-        captured = self.prefix_pe_regex.pattern14.captures(word);
-        if captured.is_some() {
-            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
-        }
-
-        // Pattern 15
-        // peC1erC2 => pe-C1erC2 where C1 != {r|w|y|l|m|n}
-        captured = self.prefix_pe_regex.pattern15.captures(word);
-        if captured.is_some() {
-            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
-        }
-
         (word.to_owned(), vec![])
     }
 
     fn remove_prefix_be(&self, word: &String) -> (String, Vec<String>) {
-        // Pattern 1
-        // berV => ber-V OR be-rV
-        let mut captured = self.prefix_be_regex.pattern1.captures(word);
-        if captured.is_some() {
-            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![String::from("r")])
+        for (rx, recoding) in self.prefix_be_regex.iter() {
+            let _captured = rx.captures(word);
+            if _captured.is_some() {
+                return (
+                    _captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()),
+                    recoding.to_owned()
+                )
+            }
         }
-
-        // Pattern 2
-        // berCAP => ber-CAP where C != 'r' and P != 'er'
-        captured = self.prefix_be_regex.pattern2.captures(word);
-        if captured.is_some() {
-            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
-        }
-
-        // Pattern 3
-        // berCAerV => ber-CAerV where C != 'r'
-        captured = self.prefix_be_regex.pattern3.captures(word);
-        if captured.is_some() {
-            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
-        }
-        
-        // Pattern 4
-        // belajar => bel-ajar
-        captured = self.prefix_be_regex.pattern4.captures(word);
-        if captured.is_some() {
-            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
-        }
-
-        // Pattern 5
-        // beC1erC2 => be-C1erC2 where C1 != {'r'|'l'}
-        captured = self.prefix_be_regex.pattern5.captures(word);
-        if captured.is_some() {
-            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
-        }
-
         (word.to_owned(), vec![])
     }
 
     fn remove_prefix_te(&self, word: &String) -> (String, Vec<String>) {
-        // Pattern 1
-	    // terV => ter-V OR te-rV
-        let mut captured = self.prefix_te_regex.pattern1.captures(word);
-        if captured.is_some() {
-            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![String::from("r")])
+        for (rx, recoding) in self.prefix_te_regex.iter() {
+            let _captured = rx.captures(word);
+            if _captured.is_some() {
+                return (
+                    _captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()),
+                    recoding.to_owned()
+                )
+            }
         }
-
-        // Pattern 2
-	    // terCerV => ter-CerV where C != 'r'
-        captured = self.prefix_te_regex.pattern2.captures(word);
-        if captured.is_some() {
-            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
-        }
-
-        // Pattern 3
-	    // terCP => ter-CP where C != 'r' and P != 'er'
-        captured = self.prefix_te_regex.pattern3.captures(word);
-        if captured.is_some() {
-            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
-        }
-        
-        // Pattern 4
-	    // teC1erC2 => te-C1erC2 where C1 != 'r'
-        captured = self.prefix_te_regex.pattern4.captures(word);
-        if captured.is_some() {
-            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
-        }
-
-        // Pattern 5
-	    // terC1erC2 => ter-C1erC2 where C1 != 'r'
-        captured = self.prefix_te_regex.pattern5.captures(word);
-        if captured.is_some() {
-            return (captured.unwrap().get(1).map_or(String::from(""), |m| m.as_str().to_string()), vec![])
-        }
-
         (word.to_owned(), vec![])
     }
 
     fn remove_infix(&self, word: &String) -> (String, Vec<String>) {
-        // Pattern 1
-        // CerV => CerV OR CV
-        let mut captured = self.infix_regex.pattern1.captures(word);
-        if captured.is_some() {
-            let unwrapped = captured.unwrap();
-            return (
-                unwrapped.get(3).map_or(String::from(""), |m| m.as_str().to_string()), 
-                vec![
-                    unwrapped.get(1).map_or(String::from(""), |m| m.as_str().to_string()), 
-                    unwrapped.get(2).map_or(String::from(""), |m| m.as_str().to_string())
-                ]
-            )
+        for rx in self.infix_regex.iter() {
+            let _captured = rx.captures(word);
+            if _captured.is_some() {
+                let unwrapped = _captured.unwrap();
+                return (
+                    unwrapped.get(3).map_or(String::from(""), |m| m.as_str().to_string()), 
+                    vec![
+                        unwrapped.get(1).map_or(String::from(""), |m| m.as_str().to_string()), 
+                        unwrapped.get(2).map_or(String::from(""), |m| m.as_str().to_string())
+                    ]
+                )
+            }
         }
-
-        // Pattern 2
-	    // CinV => CinV OR CV
-        captured = self.infix_regex.pattern2.captures(word);
-        if captured.is_some() {
-            let unwrapped = captured.unwrap();
-            return (
-                unwrapped.get(3).map_or(String::from(""), |m| m.as_str().to_string()), 
-                vec![
-                    unwrapped.get(1).map_or(String::from(""), |m| m.as_str().to_string()), 
-                    unwrapped.get(2).map_or(String::from(""), |m| m.as_str().to_string())
-                ]
-            )
-        }
-
         (word.to_owned(), vec![])
     }
 }
-
 
 struct RegexPrefixMe {
     pattern1: regex::Regex,
@@ -497,92 +339,3 @@ fn assign_regex_prefix_me() -> RegexPrefixMe {
         pattern10: regex::Regex::new(r"^mem(p[^e].*)$").unwrap(),
     }
 }
-
-
-struct RegexPrefixPe {
-    pattern1: regex::Regex,
-    pattern2: regex::Regex,
-    pattern3: regex::Regex,
-    pattern4: regex::Regex,
-    pattern5: regex::Regex,
-    pattern6: regex::Regex,
-    pattern7: regex::Regex,
-    pattern8: regex::Regex,
-    pattern9: regex::Regex,
-    pattern10: regex::Regex,
-    pattern11: regex::Regex,
-    pattern12: regex::Regex,
-    pattern13: regex::Regex,
-    pattern14: regex::Regex,
-    pattern15: regex::Regex,
-}
-
-fn assign_regex_prefix_pe() -> RegexPrefixPe {
-    RegexPrefixPe{
-        pattern1: regex::Regex::new(r"^pe([wy][aiueo].*)$").unwrap(),
-        pattern2: regex::Regex::new(r"^per([aiueo].*)$").unwrap(),
-        pattern3: regex::Regex::new(r"^per([^aiueor][a-z][^e].*)$").unwrap(),
-        pattern4: regex::Regex::new(r"^per([^aiueor][a-z]er[aiueo].*)$").unwrap(),
-        pattern5: regex::Regex::new(r"^pem([bfv].*)$").unwrap(),
-        pattern6: regex::Regex::new(r"^pem(r?[aiueo].*)$").unwrap(),
-        pattern7: regex::Regex::new(r"^pen([cdjstz].*)$").unwrap(),
-        pattern8: regex::Regex::new(r"^pen([aiueo].*)$").unwrap(),
-        pattern9: regex::Regex::new(r"^peng([^aiueo].*)$").unwrap(),
-        pattern10: regex::Regex::new(r"^peng(([aiueo])(.*))$").unwrap(),
-        pattern11: regex::Regex::new(r"^peny([aiueo].*)$").unwrap(),
-        pattern12: regex::Regex::new(r"^pe(l[aiueo].*)$").unwrap(),
-        pattern13: regex::Regex::new(r"^pe[^aiueorwylmn](er[aiueo].*)$").unwrap(),
-        pattern14: regex::Regex::new(r"^pe([^aiueorwylmn][^e].*)$").unwrap(),
-        pattern15: regex::Regex::new(r"^pe([^aiueorwylmn]er[^aiueo].*)$").unwrap(),
-    }
-}
-
-struct RegexPrefixBe {
-    pattern1: regex::Regex,
-    pattern2: regex::Regex,
-    pattern3: regex::Regex,
-    pattern4: regex::Regex,
-    pattern5: regex::Regex,
-}
-
-fn assign_regex_prefix_be() -> RegexPrefixBe {
-    RegexPrefixBe{
-        pattern1: regex::Regex::new(r"ber([aiueo].*)$").unwrap(),
-        pattern2: regex::Regex::new(r"^ber([^aiueor][a-z][^e].*)$").unwrap(),
-        pattern3: regex::Regex::new(r"^ber([^aiueor][a-z]er[aiueo].*)$").unwrap(),
-        pattern4: regex::Regex::new(r"^bel(ajar)$").unwrap(),
-        pattern5: regex::Regex::new(r"^be([^aiueorl]er[^aiueo].*)$").unwrap(),
-    }
-}
-
-struct RegexPrefixTe {
-    pattern1: regex::Regex,
-    pattern2: regex::Regex,
-    pattern3: regex::Regex,
-    pattern4: regex::Regex,
-    pattern5: regex::Regex,
-}
-
-fn assign_regex_prefix_te() -> RegexPrefixTe {
-    RegexPrefixTe{
-        pattern1: regex::Regex::new(r"^ter([aiueo].*)$").unwrap(),
-        pattern2: regex::Regex::new(r"^ter([^aiueor]er[aiueo].*)$").unwrap(),
-        pattern3: regex::Regex::new(r"^ter([^aiueor][^e].*)$").unwrap(),
-        pattern4: regex::Regex::new(r"^te([^aiueor]er[^aiueo].*)$").unwrap(),
-        pattern5: regex::Regex::new(r"^ter([^aiueor]er[^aiueo].*)$").unwrap(),
-    }
-}
-
-struct RegexInfix {
-    pattern1: regex::Regex,
-    pattern2: regex::Regex,
-}
-
-fn assign_regex_infix() -> RegexInfix {
-    RegexInfix{
-        pattern1: regex::Regex::new(r"^(([^aiueo])e[rlm])([aiueo].*)$").unwrap(),
-        pattern2: regex::Regex::new(r"^(([^aiueo])in)([aiueo].*)$").unwrap(),
-    }
-}
-
-// WTH, this is so long :<
